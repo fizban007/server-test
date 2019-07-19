@@ -1,0 +1,23 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <title>Test</title>
+    </head>
+    <body>
+        <div id='output'>text</div>
+        <script type="text/javascript">
+         const Http = new XMLHttpRequest();
+         const url='http://localhost:50505';
+         Http.open("GET", url, true);
+         Http.send();
+
+         const output = document.getElementById('output');
+
+         Http.onreadystatechange = (e) => {
+             console.log(Http.responseText);
+             output.innerHTML = Http.responseText + "!";
+         }
+        </script>
+    </body>
+</html>
