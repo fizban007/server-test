@@ -6,6 +6,11 @@
     </head>
     <body>
         <div id='output'>text</div>
+        <div style="padding-top: 20px;">
+            <form onsubmit="return sendMessage()">
+                <button style="width: 25%">Update</button>
+            </form>
+        </div>
         <script type="text/javascript">
          const Http = new XMLHttpRequest();
          const url='http://localhost:50505';
@@ -18,6 +23,26 @@
              console.log(Http.responseText);
              output.innerHTML = Http.responseText + "!";
          }
+        </script>
+        <script type="text/javascript">
+         var ws = new WebSocket("ws://localhost:50505/socket", 'echo-protocol');
+
+         function sendMessage() {
+             var message = "test";
+             var payload = {
+                 "message": message,
+             }
+             // Make the request to the WebSocket.
+             ws.send(JSON.stringify(payload));
+             return false;
+         }
+
+         ws.onmessage = function(evt) {
+             var messageDict = JSON.parse(evt.data);
+             const output = document.getElementById('output');
+             // Create a div with the format `user: message`.
+             output.innerHTML = "websocket: " + messageDict.message;
+         };
         </script>
     </body>
 </html>

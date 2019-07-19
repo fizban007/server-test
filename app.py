@@ -1,4 +1,4 @@
-from tornado import ioloop, web
+from tornado import ioloop, web, websocket
 import sys
 import os
 import base64
@@ -22,8 +22,27 @@ class ExampleHandler(web.RequestHandler):
     def get(self):
         self.write("Hello World")
 
+class SimpleWebSocket(websocket.WebSocketHandler):
+    connections = set()
+
+    def check_origin(self, origin):
+        return True
+
+    def open(self):
+        self.connections.add(self)
+
+    def on_message(self, message):
+        print(message)
+        [client.write_message(message) for client in self.connections]
+
+    def on_close(self):
+        self.connections.remove(self)
+
 def make_app():
-    return web.Application([(r"/", ExampleHandler)], **settings)
+    return web.Application([
+        (r"/", ExampleHandler),
+        (r"/socket", SimpleWebSocket)
+    ], **settings)
 
 if __name__ == "__main__":
     app = make_app()
